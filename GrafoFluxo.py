@@ -289,7 +289,7 @@ class GrafoFluxo(Grafos):
     def labelsOrdenadosPorGrau(self):
         return sorted(self.labels, reverse=True, key=self.grauVertice)
 
-    # Using BFS as a searching algorithm
+    # Busca de profundidade BFS
     def busca_largura_fluxo(self, origem, destino, parent):
         # Converte os labels para indices
         if isinstance(origem, str):
@@ -299,13 +299,28 @@ class GrafoFluxo(Grafos):
         visitado = [False] * (self.vertices)
         fila = [origem]
         visitado[origem] = True
+
         while fila:
+            # print('-------------','LOOP FILA', sep='\n')
+            # print('fila:', fila)
             vertice_atual = fila.pop(0)
             for idx, aresta in enumerate(self.lista[vertice_atual]):
-                if visitado[idx] is False and aresta[1] > 0:
-                    fila.append(idx)
-                    visitado[idx] = True
-                    parent[idx] = vertice_atual
+                # print('-------------', 'LOOP FOR', sep='\n')
+                # print('self.lista: ', self.lista[vertice_atual])
+                # print('vertice_atual: ', vertice_atual)
+                # print('idx: ', idx)
+                # print('aresta: ', aresta)
+                if visitado[aresta[0]] is False and aresta[1] > 0:
+                    # print('visitado[idx] is False and aresta[1] > 0')
+                    fila.append(aresta[0])
+                    visitado[aresta[0]] = True
+                    parent[aresta[0]] = vertice_atual
+        #             print('visitado:', visitado)
+        #             print('parent:', parent)
+        #             print('FIM DO IF')
+        #
+        # print('Visitado', visitado)
+        # print('Destino', destino)
 
         return True if visitado[destino] else False
 
@@ -334,7 +349,7 @@ class GrafoFluxo(Grafos):
         return True if destino in visitados else False
 
     # Applying fordfulkerson algorithm
-    def ford_fulkerson(self, fonte, sorvedor, debug=True):
+    def ford_fulkerson(self, fonte, sorvedor, debug=False):
         # Converte os labels para indices
         if isinstance(fonte, str):
             fonte = self.labels.get(fonte)
@@ -355,11 +370,11 @@ class GrafoFluxo(Grafos):
                 print('--------------', end='\n')
                 print('Loop:', count)
                 print('Parent:', parent)
-            path_flow = float("Inf")
+            fluxo_atual = float("Inf")
             vertice_atual = sorvedor
 
             if debug:
-                # print('path_flow', path_flow)
+                # print('fluxo_atual', fluxo_atual)
                 print('vertice_atual', vertice_atual)
 
             while vertice_atual != fonte:
@@ -367,34 +382,30 @@ class GrafoFluxo(Grafos):
                     print('vertice_atual != fonte', '---', sep='\n')
                     print('parent[s]', parent[vertice_atual])
                     # print('self.lista[parent[s]]', self.lista[parent[vertice_atual]])
-                path_flow = min(path_flow, self.pesoArestaLabel(parent[vertice_atual], vertice_atual))
+                fluxo_atual = min(fluxo_atual, self.pesoArestaLabel(parent[vertice_atual], vertice_atual))
                 vertice_atual = parent[vertice_atual]
                 if debug:
-                    print('path_flow', path_flow)
+                    print('fluxo_atual', fluxo_atual)
 
-            # Adding the path flows
-            self.fluxoMax += path_flow
+            # Somar o fluxo atual
+            self.fluxoMax += fluxo_atual
 
-            # Updating the residual values of edges
+            # Atualizar o grafo, com os pesos atuais
             vertice_residual = sorvedor
             while(vertice_residual != fonte):
                 anterior_residual = parent[vertice_residual]
 
                 peso_menos = self.pesoArestaLabel(
-                    anterior_residual, vertice_residual) - path_flow
+                    anterior_residual, vertice_residual) - fluxo_atual
                 self.updatePesoArestaLabel(
                     anterior_residual, vertice_residual, peso_menos)
 
                 peso_mais = self.pesoArestaLabel(
-                    vertice_residual, anterior_residual) + path_flow
+                    vertice_residual, anterior_residual) + fluxo_atual
                 self.updatePesoArestaLabel(
                     vertice_residual, anterior_residual, peso_mais)
 
                 vertice_residual = parent[vertice_residual]
-
-
-            if count >= 10:
-                break
 
         self.grafo_residual = self.lista.copy()
         self.lista = grafo_backup

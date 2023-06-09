@@ -14,9 +14,9 @@ if __name__ == '__main__':
     # print(grafoUm.buscaDijkstra(0, 2))
 
     grafoDois = GrafoFluxo()
-    grafoDois.openFile('Exemplos_Flux/piz_exemplo_s6.txt')
+    grafoDois.openFile('Exemplos_Flux/slides_2_s9.txt')
     grafoDois.imprimeGrafo()
-    grafoDois.ford_fulkerson(0, 5)
+    grafoDois.ford_fulkerson(0, 3)
     grafoDois.imprimeGrafo()
     # grafoDois.imprimeGrafo(cor=True)
     # print(grafoDois.consultaSaturacao('4'))
