@@ -1,3 +1,4 @@
+from GrafoFluxo import GrafoFluxo
 from GrafoLista import GrafoLista
 import numpy as np
 
@@ -12,10 +13,11 @@ if __name__ == '__main__':
     #     print("Distância do vertice", str(entrada), "para o vertice", str(vertice), "é", str(dijkstra[vertice]), sep=" ")
     # print(grafoUm.buscaDijkstra(0, 2))
 
-    grafoDois = GrafoLista()
-    grafoDois.openFile('Exemplos/k33.txt')
-    # grafoDois.imprimeGrafo()
-    grafoDois.dsatur()
+    grafoDois = GrafoFluxo()
+    grafoDois.openFile('Exemplos_Flux/piz_exemplo_s6.txt')
+    grafoDois.imprimeGrafo()
+    grafoDois.ford_fulkerson(0, 5)
+    grafoDois.imprimeGrafo()
     # grafoDois.imprimeGrafo(cor=True)
     # print(grafoDois.consultaSaturacao('4'))
     # for vertice in grafoDois.labelsOrdenadosPorGrau():
